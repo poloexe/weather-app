@@ -4,23 +4,26 @@ const Search = ({ search, setSearch, handleSearch }) => {
   const onWrite = (e) => {
     setSearch(e.target.value);
   };
+
+  const onSearch = () => {
+    handleSearch(search);
+  };
+
   return (
-    <>
-      <div className="search-engine">
+    <div className="d-flex justify-content-center my-4">
+      <div className="input-group" style={{ maxWidth: "500px" }}>
         <input
           type="text"
-          className="city-search"
+          className="form-control"
           placeholder="Enter City Name"
-          name="Search"
           value={search}
           onChange={onWrite}
         />
-
-        <button className="search-btn" onClick={handleSearch}>
+        <button className="btn btn-dark" onClick={onSearch}>
           Search
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
