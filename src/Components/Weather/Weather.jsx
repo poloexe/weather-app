@@ -42,8 +42,6 @@ const Weather = () => {
     fetchWeatherData("Lagos");
   }, []);
 
-  console.log(weatherData);
-
   return (
     <>
       <div className="App">
