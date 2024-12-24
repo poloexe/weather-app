@@ -5,28 +5,51 @@ const WeatherBoot = ({ rainy, sunny, cloudy, haze, snow }) => {
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [weatherData, setWeatherData] = useState(null);
+  const [error, setError] = useState("");
 
   const fetchWeatherData = async (city) => {
-    const response = await fetch(
-      `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=1e57c8dff4696cbcbc4c4848e02595b7&units=metric`
-    );
-    const data = await response.json();
-    return data;
+    try {
+      const response = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=1e57c8dff4696cbcbc4c4848e02595b7&units=metric`
+      );
+      if (!response.ok) {
+        throw new Error("City not found");
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      throw error;
+    }
   };
 
   const handleSearch = (city) => {
+    if (!city) {
+      setError("Please enter a city name");
+      return;
+    }
     setLoading(true);
-    fetchWeatherData(city).then((data) => {
-      setWeatherData(data);
-      setLoading(false);
-    });
+    setError("");
+    fetchWeatherData(city)
+      .then((data) => {
+        setWeatherData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError("No city found");
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
-    fetchWeatherData("Lagos").then((data) => {
-      setWeatherData(data);
-      setLoading(false);
-    });
+    fetchWeatherData("Lagos")
+      .then((data) => {
+        setWeatherData(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        setError("No city found");
+        setLoading(false);
+      });
   }, []);
 
   const getWeatherImage = (description) => {
@@ -54,7 +77,14 @@ const WeatherBoot = ({ rainy, sunny, cloudy, haze, snow }) => {
             <span className="sr-only">Loading</span>
           </div>
         </div>
-      ) : (
+      ) : error ? (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: "100vh" }}
+        >
+          <h4>{error}</h4>
+        </div>
+      ) : weatherData ? (
         <div className="row d-flex justify-content-center py-5">
           <div className="col-md-8 col-lg-6 col-xl-5">
             <div
@@ -96,7 +126,7 @@ const WeatherBoot = ({ rainy, sunny, cloudy, haze, snow }) => {
             </div>
           </div>
         </div>
-      )}
+      ) : null}
     </>
   );
 };
